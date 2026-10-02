@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Collections 101</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-950:#0f1c2e;
+    --navy-900:#152b45;
+    --navy-800:#1d3a5c;
+    --navy-700:#28517d;
+    --navy-line:#2c4a6e;
+    --paper:#f4f6f8;
+    --paper-card:#ffffff;
+    --gold:#c99a3a;
+    --gold-light:#e8c876;
+    --gold-dim:#f2e4c2;
+    --ink:#16232f;
+    --ink-soft:#4a5a68;
+    --ink-faint:#8496a3;
+    --green:#2f7d58;
+    --green-bg:#e8f3ec;
+    --red:#b3402f;
+    --red-bg:#faeae7;
+    --radius:14px;
+    --shadow-card: 0 1px 2px rgba(15,28,46,0.06), 0 8px 24px rgba(15,28,46,0.08);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:32px 16px 56px;
+    line-height:1.5;
+  }
+  .mono{ font-family:'IBM Plex Mono','SFMono-Regular',Consolas,monospace; }
+
+  .app{
+    width:100%;
+    max-width:720px;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    background:var(--navy-950);
+    border-radius:var(--radius) var(--radius) 0 0;
+    padding:20px 24px;
+    color:#fff;
+    position:relative;
+    overflow:hidden;
+  }
+  .topbar::after{
+    content:"";
+    position:absolute;
+    top:-40%; right:-10%;
+    width:220px; height:220px;
+    background:radial-gradient(circle, rgba(201,154,58,0.18), transparent 70%);
+    pointer-events:none;
+  }
+  .topbar-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .brand{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .brand-eyebrow{
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold-light);
+    font-weight:600;
+  }
+  .brand-title{
+    font-size:19px;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  .stat-pill{
+    font-size:11px;
+    color:#cfe0f0;
+    background:rgba(255,255,255,0.08);
+    border:1px solid rgba(255,255,255,0.14);
+    border-radius:20px;
+    padding:5px 10px;
+    white-space:nowrap;
+  }
+  .stat-pill b{ color:#fff; }
+
+  .progress-track{
+    margin-top:16px;
+    height:6px;
+    border-radius:4px;
+    background:rgba(255,255,255,0.12);
+    overflow:hidden;
+  }
+  .progress-fill{
+    height:100%;
+    background:linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius:4px;
+    transition:width 0.35s ease;
+    width:0%;
+  }
+  .progress-caption{
+    margin-top:8px;
+    font-size:11.5px;
+    color:#a9bdd0;
+    display:flex;
+    justify-content:space-between;
+  }
+
+  /* ---------- Card body ---------- */
+  .card{
+    background:var(--paper-card);
+    border-radius:0 0 var(--radius) var(--radius);
+    box-shadow:var(--shadow-card);
+    padding:28px 24px 24px;
+  }
+
+  /* ---------- Intro screen ---------- */
+  .intro h1{
+    font-size:22px;
+    margin:0 0 8px;
+    letter-spacing:-0.01em;
+  }
+  .intro p{
+    color:var(--ink-soft);
+    font-size:14.5px;
+    margin:0 0 18px;
+  }
+  .rule-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .rule-item{
+    background:var(--paper);
+    border:1px solid #e3e8ec;
+    border-radius:10px;
+    padding:12px 14px;
+  }
+  .rule-item .num{
+    font-size:20px;
+    font-weight:700;
+    color:var(--navy-800);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .rule-item .lbl{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .prev-attempt{
+    font-size:13px;
+    color:var(--ink-soft);
+    background:var(--gold-dim);
+    border:1px solid #e3cf98;
+    border-radius:10px;
+    padding:10px 14px;
+    margin-bottom:18px;
+  }
+  .btn{
+    appearance:none;
+    border:none;
+    cursor:pointer;
+    font-family:inherit;
+    font-weight:600;
+    font-size:14.5px;
+    border-radius:10px;
+    padding:13px 20px;
+    transition:transform 0.08s ease, background 0.15s ease, box-shadow 0.15s ease;
+  }
+  .btn:active{ transform:scale(0.98); }
+  .btn-primary{
+    background:var(--navy-900);
+    color:#fff;
+    width:100%;
+  }
+  .btn-primary:hover{ background:var(--navy-800); }
+  .btn-primary:disabled{
+    background:#c7cfd6;
+    cursor:not-allowed;
+  }
+  .btn-ghost{
+    background:transparent;
+    color:var(--navy-800);
+    border:1px solid #d3dbe1;
+  }
+  .btn-ghost:hover{ background:#eef2f5; }
+
+  /* ---------- Question nav dots ---------- */
+  .qnav{
+    display:grid;
+    grid-template-columns:repeat(10, 1fr);
+    gap:6px;
+    margin:16px 0 20px;
+  }
+  .qdot{
+    height:26px;
+    border-radius:6px;
+    border:1px solid #d8dee3;
+    background:#fff;
+    color:var(--ink-faint);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .qdot.answered{
+    background:var(--navy-900);
+    border-color:var(--navy-900);
+    color:#fff;
+  }
+  .qdot.current{
+    outline:2px solid var(--gold);
+    outline-offset:1px;
+  }
+
+  /* ---------- Question ---------- */
+  .q-eyebrow{
+    font-size:11px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .q-text{
+    font-size:17px;
+    font-weight:600;
+    color:var(--ink);
+    margin:0 0 18px;
+    line-height:1.45;
+  }
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .option{
+    text-align:left;
+    background:#fff;
+    border:1.5px solid #dde4e9;
+    border-radius:10px;
+    padding:13px 14px;
+    font-size:14.5px;
+    color:var(--ink);
+    cursor:pointer;
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .option:hover{ border-color:var(--navy-700); }
+  .option .letter{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    font-size:12.5px;
+    color:var(--ink-faint);
+    background:var(--paper);
+    border-radius:5px;
+    width:22px; height:22px;
+    min-width:22px;
+    display:flex; align-items:center; justify-content:center;
+    margin-top:1px;
+  }
+  .option.selected{
+    border-color:var(--navy-900);
+    background:#f2f6fa;
+  }
+  .option.selected .letter{
+    background:var(--navy-900);
+    color:#fff;
+  }
+  .option:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:2px;
+  }
+
+  .nav-row{
+    display:flex;
+    gap:10px;
+    justify-content:space-between;
+  }
+  .nav-row .btn-ghost{ flex:0 0 auto; }
+  .nav-row .btn-primary{ flex:1 1 auto; }
+
+  /* ---------- Results ---------- */
+  .result-head{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+  }
+  .score-dial{
+    width:104px;height:104px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    flex:0 0 auto;
+    background:conic-gradient(var(--gold) calc(var(--pct) * 1%), #e7ecf0 0);
+    position:relative;
+  }
+  .score-dial::before{
+    content:"";
+    position:absolute;
+    width:80px;height:80px;
+    border-radius:50%;
+    background:#fff;
+  }
+  .score-dial .pct{
+    position:relative;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:22px;
+    font-weight:700;
+    color:var(--navy-900);
+  }
+  .score-dial .frac{
+    position:relative;
+    font-size:11px;
+    color:var(--ink-faint);
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .stamp{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:700;
+    font-size:20px;
+    letter-spacing:0.06em;
+    padding:10px 18px;
+    border-radius:8px;
+    border:3px solid currentColor;
+    transform:rotate(-3deg);
+    display:inline-block;
+  }
+  .stamp.pass{ color:var(--green); background:var(--green-bg); }
+  .stamp.fail{ color:var(--red); background:var(--red-bg); }
+  .result-sub{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin-top:4px;
+  }
+
+  .section-breakdown{
+    margin:22px 0;
+  }
+  .section-breakdown h3{
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--ink-faint);
+    margin:0 0 10px;
+  }
+  .sec-row{
+    display:grid;
+    grid-template-columns:150px 1fr 44px;
+    align-items:center;
+    gap:10px;
+    margin-bottom:7px;
+    font-size:12.5px;
+  }
+  .sec-name{ color:var(--ink-soft); }
+  .sec-bar-track{
+    height:8px;
+    background:#eef1f4;
+    border-radius:4px;
+    overflow:hidden;
+  }
+  .sec-bar-fill{
+    height:100%;
+    background:var(--navy-800);
+    border-radius:4px;
+  }
+  .sec-frac{
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--ink-faint);
+    text-align:right;
+  }
+
+  .review-toggle{
+    margin:8px 0 18px;
+  }
+
+  .review-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .review-item{
+    border:1px solid #e3e8ec;
+    border-radius:10px;
+    padding:14px 15px;
+  }
+  .review-item.wrong{ border-color:#e9c9c1; background:var(--red-bg); }
+  .review-item.right{ border-color:#c9e0d2; background:var(--green-bg); }
+  .review-top{
+    display:flex;
+    gap:8px;
+    align-items:baseline;
+    font-size:12px;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .review-top .tag-right{ color:var(--green); }
+  .review-top .tag-wrong{ color:var(--red); }
+  .review-q{
+    font-size:14px;
+    font-weight:600;
+    margin:0 0 8px;
+  }
+  .review-ans{
+    font-size:13px;
+    margin:2px 0;
+  }
+  .review-ans .lbl{ color:var(--ink-faint); }
+  .review-explain{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-top:8px;
+    padding-top:8px;
+    border-top:1px dashed #d8dee3;
+  }
+
+  .result-actions{
+    display:flex;
+    gap:10px;
+  }
+  .result-actions .btn{ flex:1; }
+
+  footer.disclaimer{
+    text-align:center;
+    font-size:11.5px;
+    color:var(--ink-faint);
+    margin-top:14px;
+  }
+
+  @media (max-width:420px){
+    .rule-grid{ grid-template-columns:1fr 1fr; }
+    .qnav{ grid-template-columns:repeat(8,1fr); }
+    .sec-row{ grid-template-columns:110px 1fr 40px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ transition:none !important; animation:none !important; }
+  }
+</style>
+</head>
+<body>
+<!-- MLC results capture -->
+<div id="mlcGate" style="position:fixed;inset:0;z-index:99999;background:rgba(10,16,28,.82);display:flex;align-items:center;justify-content:center;padding:20px;font-family:system-ui,-apple-system,'Segoe UI',Arial,sans-serif;">
+  <form id="mlcGateForm" style="background:#fff;color:#1b1f27;width:100%;max-width:420px;padding:28px 26px;border-top:4px solid #1b1f27;box-shadow:0 20px 60px rgba(0,0,0,.35);text-align:left;">
+    <div style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-bottom:8px;">Collections 101</div>
+    <div style="font-size:22px;font-weight:700;line-height:1.2;margin-bottom:6px;">Before you begin</div>
+    <div style="font-size:14px;line-height:1.5;opacity:.75;margin-bottom:18px;">Enter your full name. Your results are recorded when you finish.</div>
+    <label for="mlcName" style="display:block;font-size:12px;font-weight:600;margin-bottom:6px;">Full name</label>
+    <input id="mlcName" autocomplete="name" required style="width:100%;box-sizing:border-box;font-size:16px;padding:12px;border:2px solid #1b1f27;margin-bottom:16px;outline:none;">
+    <button type="submit" style="width:100%;min-height:48px;font-size:15px;font-weight:700;background:#1b1f27;color:#fff;border:0;cursor:pointer;text-align:left;padding:0 16px;">Continue &rarr;</button>
+  </form>
+</div>
+<div id="mlcSaved" style="display:none;position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:99998;background:#1b1f27;color:#fff;font:600 13px system-ui,Arial,sans-serif;padding:10px 16px;"></div>
+<script>
+(function(){
+  var SHEET_URL = "https://script.google.com/macros/s/AKfycbwq10Rl16OwAAkfNLgHQcJK-uSB4uTkWBisG615MJ_WEqUNtLe3db-HZf1NPNpAHRRtFw/exec";
+  var QUIZ = "Collections 101";
+  var t0 = Date.now(), name = "";
+  try { name = sessionStorage.getItem("mlc-candidate-name") || ""; } catch(e){}
+  var gate = document.getElementById("mlcGate");
+  if (name) gate.style.display = "none";
+  document.getElementById("mlcGateForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    var v = document.getElementById("mlcName").value.trim();
+    if (v.split(/\s+/).length < 2) { alert("Please enter your first and last name."); return; }
+    name = v; try { sessionStorage.setItem("mlc-candidate-name", v); } catch(e){}
+    gate.style.display = "none"; t0 = Date.now();
+  });
+  function toast(msg){ var el = document.getElementById("mlcSaved"); el.textContent = msg; el.style.display = "block"; setTimeout(function(){ el.style.display = "none"; }, 4000); }
+  window.MLC_REPORT = function(r){
+    var secs = Math.round((Date.now() - t0) / 1000);
+    var lines = [QUIZ, "Candidate: " + (name || "Unnamed"), "Score: " + r.score + "/" + r.total + " (" + r.pct + "%) — " + (r.passed ? "PASS" : "FAIL") + " (80% required)", ""];
+    if (r.breakdown) { lines.push("BREAKDOWN"); Object.keys(r.breakdown).forEach(function(k){ var b = r.breakdown[k]; lines.push("  " + k + ": " + b.correct + "/" + b.total); }); lines.push(""); }
+    lines.push("MISSED (" + r.missed.length + ")");
+    r.missed.forEach(function(m, i){ lines.push((i+1) + ". " + m.q); lines.push("   Picked: " + m.picked); lines.push("   Correct: " + m.correct); });
+    var row = {
+      submitted: new Date().toISOString(), candidate: name || "Unnamed", position: QUIZ,
+      reference: "Q-" + Date.now().toString(36).toUpperCase() + Math.floor(Math.random()*1000),
+      version: /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent) ? "Mobile" : "Desktop",
+      verdict: r.passed ? "PASS" : "FAIL", composite: r.score + "/" + r.total + " (" + r.pct + "%)",
+      numerical: "", reading: "", typingWpm: "", typingAccuracy: "",
+      timeUsed: Math.floor(secs/60) + "m " + (secs%60) + "s", answered: r.total + "/" + r.total,
+      device: navigator.userAgent, report: lines.join("\n")
+    };
+    var body = JSON.stringify(row);
+    (function attempt(n){
+      fetch(SHEET_URL, { method:"POST", mode:"no-cors", keepalive:true, headers:{ "Content-Type":"text/plain;charset=utf-8" }, body: body })
+        .then(function(){ toast("Results recorded."); })
+        .catch(function(err){ console.warn("MLC results send failed (attempt " + n + ")", err); if (n < 4) setTimeout(function(){ attempt(n+1); }, n*3000); else toast("Could not record results — please tell your supervisor."); });
+    })(1);
+  };
+})();
+</script>
+<!-- /MLC results capture -->
+
+<div class="app">
+
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="brand">
+        <div class="brand-eyebrow">MLC · New Hire Training</div>
+        <div class="brand-title">Collections 101</div>
+      </div>
+      <div class="stat-pill mono" id="statPill">Attempt <b>1</b></div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-caption mono">
+      <span id="progressLabel">Not started</span>
+      <span id="progressPct">0%</span>
+    </div>
+  </div>
+
+  <div class="card" id="cardRoot">
+    <!-- content injected by JS -->
+  </div>
+
+  <footer class="disclaimer">30 questions · 80% required to pass (24 of 30) · Based on the Collections 101 training deck</footer>
+</div>
+
+<script>
+(function(){
+
+  const QUESTIONS = [
+    { section:"Part 1 · What is Debt Collection", q:"Under the FDCPA, a \u201Cdebt collector\u201D is best defined as:",
+      options:[
+        "A person or company that regularly collects debts owed to others, usually past-due",
+        "Any business collecting money it is owed by its own customers",
+        "Only law firms that sue consumers for nonpayment",
+        "Any employee who discusses billing with a customer"
+      ], correct:0,
+      explain:"The FDCPA defines a debt collector as a person or company that regularly collects debts owed to others — this is the law behind verification, the Mini-Miranda, and dispute handling." },
+
+    { section:"Part 1 · What is Debt Collection", q:"A clinic's own billing office calls a patient about that patient's unpaid balance with the clinic. This is:",
+      options:[
+        "Recovery, because money is being recovered",
+        "Collection, because the business is collecting its own debt",
+        "Neither collection nor recovery",
+        "Recovery, because a specialist is involved"
+      ], correct:1,
+      explain:"Collection is a business collecting on debts owed by its own customers. Recovery is a third party, like MLC, collecting for another creditor." },
+
+    { section:"Part 1 · What is Debt Collection", q:"MLC calls a patient on behalf of a clinic to collect an unpaid balance. Why does verification and the Mini-Miranda matter so much here?",
+      options:[
+        "It's a courtesy but not legally necessary",
+        "Only outbound calls require it",
+        "MLC is a third party with no prior relationship to the consumer, collecting on another creditor's behalf",
+        "MLC charges a fee for verification services"
+      ], correct:2,
+      explain:"The consumer never signed anything with MLC. Because MLC is a third-party recovery agency, verifying identity and disclosing purpose protects against wrongful disclosure to the wrong person." },
+
+    { section:"Part 1 · What is Debt Collection", q:"Which of these is NOT one of the reasons the training gives for why debt recovery work matters?",
+      options:[
+        "Recovered money returns to the economy",
+        "It keeps the cost of goods and services lower",
+        "Creditors get paid for work or goods already provided",
+        "It guarantees the consumer's credit score will improve"
+      ], correct:3,
+      explain:"The training cites economic return, lower costs for consumers, and creditors getting paid for completed work — it never claims a credit score guarantee." },
+
+    { section:"Part 2 · Seven Skills", q:"A new specialist tells a consumer, \u201CThat's not our fault, that was the billing department's mistake.\u201D Which skill does this violate?",
+      options:[
+        "Active listening",
+        "Take ownership",
+        "Respect",
+        "Meet commitments"
+      ], correct:1,
+      explain:"Take ownership means never deflecting blame to another department — to the consumer, you represent MLC and the client, full stop." },
+
+    { section:"Part 2 · Seven Skills", q:"What is the key distinction between acknowledgement and empathy?",
+      options:[
+        "Acknowledgement recognises what the consumer said; empathy shows you understand the situation behind it",
+        "They are the same skill with different names",
+        "Acknowledgement is used only with angry consumers",
+        "Empathy means agreeing that the debt isn't valid"
+      ], correct:0,
+      explain:"Acknowledgement validates what was said; empathy goes a step further to understand the situation and feelings behind it. Neither one means agreeing the debt is invalid." },
+
+    { section:"Part 2 · Seven Skills", q:"A consumer says, \u201CI lost my job and can't pay this right now.\u201D Which is the best empathetic response per the training's examples?",
+      options:[
+        "\u201CI understand, but you still owe this money regardless of your job situation.\u201D",
+        "\u201CLet me transfer you to someone who can discuss options in more depth.\u201D",
+        "\u201CI'll need you to explain your full financial situation before we continue.\u201D",
+        "\u201CThat sounds extremely challenging.\u201D"
+      ], correct:3,
+      explain:"Empathetic statements are short, sweet, and to the point — \u201CThat sounds extremely challenging\u201D matches the training's model language exactly." },
+
+    { section:"Part 2 · Seven Skills", q:"What does \u201Creassurance\u201D primarily prevent, according to the training?",
+      options:[
+        "Disputes under the FDCPA",
+        "The need for a Mini-Miranda",
+        "Buyer's remorse after the consumer commits to a payment",
+        "Escalation to a senior rep"
+      ], correct:2,
+      explain:"Reassurance lessens buyer's remorse — the regret that can set in right after someone agrees to pay — helping prevent a broken arrangement later." },
+
+    { section:"Part 2 · Seven Skills", q:"Whose job is it to make sure the specialist correctly understands the consumer?",
+      options:[
+        "The specialist's",
+        "The consumer's",
+        "Shared equally, so no one is specifically accountable",
+        "The senior rep's"
+      ], correct:0,
+      explain:"Active listening's core line: it is your job to understand the consumer, not their job to make sure you do." },
+
+    { section:"Part 2 · Seven Skills", q:"A specialist tells a consumer, \u201CWe'll go ahead and status the account.\u201D Which skill does this violate?",
+      options:[
+        "Meet commitments",
+        "Respect (avoiding jargon)",
+        "Take ownership",
+        "Active listening"
+      ], correct:1,
+      explain:"\u201CStatus the account\u201D is internal jargon that means nothing to a consumer. Respect includes avoiding jargon so the consumer can actually follow the call." },
+
+    { section:"Part 2 · Seven Skills", q:"A consumer becomes abusive and starts swearing. What is the specialist expected to do?",
+      options:[
+        "Hang up immediately to protect themselves",
+        "Match the consumer's tone to establish authority",
+        "Transfer the call without comment",
+        "De-escalate professionally, and they may ask the consumer to stop swearing"
+      ], correct:3,
+      explain:"It is the specialist's job to de-escalate, not simply hang up. Asking a consumer to stop swearing is allowed when done professionally and without escalating further." },
+
+    { section:"Part 3 · Compliance", q:"Which of the following, on its own, satisfies the verification requirement before discussing an account?",
+      options:[
+        "Full name only",
+        "Date of birth only",
+        "Full name plus one of: address, date of birth, or last 4 of SSN",
+        "Any two pieces of identifying information, name not required"
+      ], correct:2,
+      explain:"Step 1 is always full name. Step 2 is one additional identifier: address, date of birth, or last 4 of SSN. Name alone, or an identifier without the name, isn't enough." },
+
+    { section:"Part 3 · Compliance", q:"The Mini-Miranda must be delivered:",
+      options:[
+        "Only when a consumer explicitly asks about their legal rights",
+        "After verification is complete, before the balance is discussed",
+        "Before verification, so the consumer knows why they're being asked questions",
+        "Only on outbound calls, not inbound or transferred calls"
+      ], correct:1,
+      explain:"The Mini-Miranda is delivered after verification and before the balance is discussed — on every collection call, inbound, outbound, or transferred, no exceptions." },
+
+    { section:"Part 3 · Compliance", q:"A consumer disputes a debt shortly after first being contacted, within the validation period. Per the training, what is true?",
+      options:[
+        "MLC treats the call as a courtesy, advises of the debt and amount, and cannot force payment",
+        "The debt is automatically forgiven",
+        "Collection must stop permanently",
+        "The dispute is ignored since it wasn't submitted in writing"
+      ], correct:0,
+      explain:"Inside the validation window, MLC does its due diligence, treats the call as a courtesy, and the consumer may freely choose to pay — but payment cannot be forced." },
+
+    { section:"Part 3 · Compliance", q:"A consumer disputes a debt well outside the validation period. What changes?",
+      options:[
+        "The account must be closed",
+        "MLC can no longer contact the consumer",
+        "Nothing changes procedurally — payment may still be demanded, and MLC still records the dispute",
+        "The specialist must offer a settlement automatically"
+      ], correct:2,
+      explain:"Outside the window, MLC still recognises and records the dispute, but the dispute does not halt collection, and payment may still be demanded." },
+
+    { section:"Part 3 · Compliance", q:"What is the single most common new-hire mistake related to verification?",
+      options:[
+        "Verifying the consumer twice",
+        "Skipping the Mini-Miranda entirely",
+        "Asking for too many identifiers",
+        "Naming the balance, the client, or \u201Cpast due\u201D before verification is complete"
+      ], correct:3,
+      explain:"If you cannot verify, you cannot discuss the account — saying the balance, client name, or \u201Cpast due\u201D too early is the flagged common mistake." },
+
+    { section:"Part 4 · The Talk-Off", q:"Put these talk-off steps in the order they actually occur: Fact-find, Verify the consumer, Demand payment, Close the call.",
+      options:[
+        "Fact-find \u2192 Verify the consumer \u2192 Demand payment \u2192 Close the call",
+        "Verify the consumer \u2192 Demand payment \u2192 Fact-find \u2192 Close the call",
+        "Verify the consumer \u2192 Fact-find \u2192 Demand payment \u2192 Close the call",
+        "Demand payment \u2192 Fact-find \u2192 Verify the consumer \u2192 Close the call"
+      ], correct:1,
+      explain:"The eight-part flow runs: identify, verify, Mini-Miranda, status the account, demand payment (PIF first), fact-find, negotiate, close. So verify comes before demand payment, which comes before fact-find." },
+
+    { section:"Part 4 · The Talk-Off", q:"When a consumer first says \u201Cno\u201D to paying in full, the collector should:",
+      options:[
+        "Immediately offer the lowest payment plan",
+        "End the call and try again later",
+        "Repeat the same demand for payment in full a second time",
+        "Ask a question that moves toward a specific date or fact-finding"
+      ], correct:3,
+      explain:"\u201CNo, not today\u201D is answered with a question, not an argument and not an immediate discount — it's the start of the negotiation, not the end of the call." },
+
+    { section:"Part 4 · The Talk-Off", q:"Why does the training recommend asking employment and household questions before making an offer?",
+      options:[
+        "It improves the odds of correctly determining what the consumer can and will pay",
+        "It's required by the FDCPA",
+        "It's a stalling tactic to make the consumer uncomfortable",
+        "It's only used when the consumer disputes the debt"
+      ], correct:0,
+      explain:"Negotiating is a strategy based on odds — questions about work, hours, and household shorten the odds of guessing wrong about what a consumer can afford." },
+
+    { section:"Part 4 · The Talk-Off", q:"In the example call, the consumer says a 3-payment offer is \u201Ctoo steep.\u201D What does the collector do next?",
+      options:[
+        "Lower the total balance owed",
+        "Escalate immediately to a senior rep",
+        "Reshape the schedule to match the consumer's pay cycle, without lowering the total",
+        "Offer a fourth payment to reduce each amount"
+      ], correct:2,
+      explain:"The collector switches from monthly to bi-weekly payments matching the consumer's pay cycle. The total MLC collects doesn't change — only the rhythm does." },
+
+    { section:"Part 5 · Negotiation", q:"Which of these is one of the seven \u201Cbasic truths\u201D of negotiation taught in the training?",
+      options:[
+        "Always negotiate down before asking for payment in full",
+        "The consumer should always get the last word",
+        "Silence should always be filled by the specialist",
+        "Negotiations don't start until someone says no"
+      ], correct:3,
+      explain:"This basic truth reframes rejection as the beginning of the real negotiation, not the end of the conversation." },
+
+    { section:"Part 5 · Negotiation", q:"A consumer owes $410 and cannot pay in full today. What is the specialist authorised to offer?",
+      options:[
+        "Whatever the consumer requests",
+        "Up to 2 payments maximum",
+        "No plan; this must be escalated",
+        "Up to 3 payments maximum"
+      ], correct:1,
+      explain:"Balances under $500 are capped at 2 payments maximum. $410 falls under that threshold." },
+
+    { section:"Part 5 · Negotiation", q:"A consumer owes $640 and cannot pay in full today. What is the specialist authorised to offer?",
+      options:[
+        "3 payments maximum",
+        "2 payments maximum",
+        "4 payments if the consumer is paid bi-weekly",
+        "Payment in full only — no plans over $500"
+      ], correct:0,
+      explain:"Balances over $500 are capped at 3 payments maximum — the same tier the $502.23 example call used." },
+
+    { section:"Part 5 · Negotiation", q:"Which of these is NOT given as a reason the payment-plan limits exist?",
+      options:[
+        "Long plans risk the consumer through possible default or life interruptions",
+        "Small payments cost the specialist in built-up base",
+        "Long arrangements can technically cost the client money over time",
+        "They punish consumers who genuinely cannot pay faster"
+      ], correct:3,
+      explain:"The three real reasons given: it protects the client's money, protects the specialist's base, and protects the consumer from a plan long enough to fail. Punishment is never the stated rationale." },
+
+    { section:"Part 5 · Negotiation", q:"A consumer needs more time to pay than the specialist's plan limits allow. What should the specialist do?",
+      options:[
+        "Tell the consumer no plan is possible",
+        "Offer the extended plan anyway since the consumer asked nicely",
+        "Get the call to a senior rep who can work out extended plans",
+        "End the call without an arrangement"
+      ], correct:2,
+      explain:"Escalating to a senior rep for extended plans is the correct outcome, not a failure — promising a plan you're not authorised to give is one of the training's flagged mistakes." },
+
+    { section:"Part 6 · Objections & Stalls", q:"What is the key difference between an objection and a stall?",
+      options:[
+        "A stall is illegal; an objection is not",
+        "An objection is a reason for disagreeing with the debt; a stall is an intentional delay in taking action",
+        "They are handled with the identical six-step process",
+        "An objection only happens on outbound calls"
+      ], correct:1,
+      explain:"An objection disputes the debt itself. A stall is a delay tactic — not a matter of if, but when the consumer will act." },
+
+    { section:"Part 6 · Objections & Stalls", q:"Which step in the six-step objection process do new hires most often forget?",
+      options:[
+        "Redirecting the conversation back to collecting",
+        "Listening to the objection",
+        "Asking open-ended questions",
+        "Acknowledging and neutralising"
+      ], correct:0,
+      explain:"New hires often resolve the objection well and then end the call without ever redirecting back to asking for payment — step six, never skip it." },
+
+    { section:"Part 6 · Objections & Stalls", q:"A consumer says, \u201CI'll mail the payment.\u201D What is the recommended response?",
+      options:[
+        "\u201COkay, we'll wait for it to arrive.\u201D",
+        "\u201CThat won't work, we need a card number today.\u201D",
+        "\u201CI'll make a note and follow up next month.\u201D",
+        "\u201CWhat day did you get that mailed to us?\u201D"
+      ], correct:3,
+      explain:"Every stall is answered with a question that turns a vague delay into a specific, trackable date." },
+
+    { section:"Part 6 · Objections & Stalls", q:"According to the training, offering \u201Cother sources of money\u201D (borrowing from family, a yard sale, a payday advance) is best understood as:",
+      options:[
+        "An aggressive pressure tactic to use immediately",
+        "A required legal disclosure",
+        "Offering alternatives the consumer may not have considered, once rapport is established",
+        "Something to mention only if the consumer requests it"
+      ], correct:2,
+      explain:"These uncomfortable questions are framed as offering alternatives the consumer hadn't considered — not pressure, and not optional politeness." },
+
+    { section:"Part 7 · Putting It Together", q:"In the call-flow chart, what happens when the consumer says \u201Cno\u201D to an offer during negotiation?",
+      options:[
+        "The call ends and is logged as unsuccessful",
+        "It loops back to fact-finding and negotiation, not to the start of the call",
+        "The specialist must escalate immediately",
+        "The specialist repeats the Mini-Miranda"
+      ], correct:1,
+      explain:"A \u201Cno\u201D doesn't exit the call — the chart loops back to fact-finding: ask another question, find another date or source, and keep working toward an arrangement." }
+  ];
+
+  const TOTAL = QUESTIONS.length;
+  const PASS_PCT = 80;
+  const PASS_COUNT = Math.ceil(TOTAL * PASS_PCT / 100);
+
+  // Fisher-Yates shuffle, returns a new array (does not mutate input)
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i = a.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // Builds a fresh, randomized copy of the question set for one attempt:
+  // question order is shuffled, and each question's own option order is
+  // shuffled too (with the correct-answer index remapped to match).
+  function buildSessionQuestions(){
+    const questionOrder = shuffle(QUESTIONS);
+    return questionOrder.map(item => {
+      const optionOrder = shuffle(item.options.map((opt, i) => i)); // shuffled list of original indices
+      const newOptions = optionOrder.map(i => item.options[i]);
+      const newCorrect = optionOrder.indexOf(item.correct);
+      return Object.assign({}, item, { options: newOptions, correct: newCorrect });
+    });
+  }
+
+  let sessionQuestions = QUESTIONS;
+  let answers = new Array(TOTAL).fill(null);
+  let current = 0;
+  let phase = "intro"; // intro | quiz | results
+  let stats = { attempts: 0, best: 0 };
+
+  const root = document.getElementById("cardRoot");
+  const progressFill = document.getElementById("progressFill");
+  const progressLabel = document.getElementById("progressLabel");
+  const progressPct = document.getElementById("progressPct");
+  const statPill = document.getElementById("statPill");
+
+  function esc(s){
+    const d = document.createElement("div");
+    d.innerText = s;
+    return d.innerHTML;
+  }
+
+  async function loadStats(){
+    try{
+      const res = await window.storage.get("collections101-stats", false);
+      if(res && res.value){
+        const parsed = JSON.parse(res.value);
+        stats.attempts = parsed.attempts || 0;
+        stats.best = parsed.best || 0;
+      }
+    }catch(e){ /* no prior stats, that's fine */ }
+    renderStatPill();
+  }
+
+  async function saveStats(scorePct){
+    stats.attempts += 1;
+    if(scorePct > stats.best) stats.best = scorePct;
+    try{
+      await window.storage.set("collections101-stats", JSON.stringify(stats), false);
+    }catch(e){ /* non-fatal */ }
+    renderStatPill();
+  }
+
+  function renderStatPill(){
+    if(phase === "intro" && stats.attempts > 0){
+      statPill.innerHTML = `Attempt <b>${stats.attempts + 1}</b> · Best <b>${stats.best}%</b>`;
+    } else if(phase === "quiz"){
+      statPill.innerHTML = `Question <b>${current+1}</b> of <b>${TOTAL}</b>`;
+    } else {
+      statPill.innerHTML = `Attempt <b>${stats.attempts}</b>`;
+    }
+  }
+
+  function updateProgressBar(){
+    if(phase === "intro"){
+      progressFill.style.width = "0%";
+      progressLabel.textContent = "Not started";
+      progressPct.textContent = "0%";
+    } else if(phase === "quiz"){
+      const answeredCount = answers.filter(a => a !== null).length;
+      const pct = Math.round(((current) / TOTAL) * 100);
+      progressFill.style.width = pct + "%";
+      progressLabel.textContent = `Question ${current+1} of ${TOTAL}`;
+      progressPct.textContent = `${answeredCount} answered`;
+    } else {
+      progressFill.style.width = "100%";
+      progressLabel.textContent = "Complete";
+      progressPct.textContent = "100%";
+    }
+  }
+
+  function renderIntro(){
+    phase = "intro";
+    renderStatPill();
+    updateProgressBar();
+    let priorBlock = "";
+    if(stats.attempts > 0){
+      priorBlock = `<div class="prev-attempt">You've taken this check <b>${stats.attempts}</b> time${stats.attempts>1?"s":""} before. Best score so far: <b>${stats.best}%</b>.</div>`;
+    }
+    root.innerHTML = `
+      <div class="intro">
+        <h1>Ready for your certification check?</h1>
+        <p>This covers all seven parts of Collections 101 — the legal basics, the seven skills, compliance non-negotiables, the talk-off, negotiation limits, and objections &amp; stalls. Questions apply the material to real call scenarios, not just definitions.</p>
+        <div class="rule-grid">
+          <div class="rule-item"><div class="num mono">${TOTAL}</div><div class="lbl">Questions</div></div>
+          <div class="rule-item"><div class="num mono">${PASS_PCT}%</div><div class="lbl">Required to pass (${PASS_COUNT}/${TOTAL})</div></div>
+        </div>
+        ${priorBlock}
+        <button class="btn btn-primary" id="startBtn">Start certification check</button>
+      </div>
+    `;
+    document.getElementById("startBtn").addEventListener("click", () => {
+      sessionQuestions = buildSessionQuestions();
+      answers = new Array(TOTAL).fill(null);
+      current = 0;
+      phase = "quiz";
+      renderQuiz();
+    });
+  }
+
+  function renderQuiz(){
+    renderStatPill();
+    updateProgressBar();
+    const item = sessionQuestions[current];
+    const letters = ["A","B","C","D"];
+
+    let dotsHtml = "";
+    for(let i=0;i<TOTAL;i++){
+      const ans = answers[i] !== null ? "answered" : "";
+      const cur = i === current ? "current" : "";
+      dotsHtml += `<button class="qdot ${ans} ${cur}" data-idx="${i}" aria-label="Go to question ${i+1}">${i+1}</button>`;
+    }
+
+    let optsHtml = "";
+    item.options.forEach((opt, i) => {
+      const sel = answers[current] === i ? "selected" : "";
+      optsHtml += `
+        <button class="option ${sel}" data-idx="${i}">
+          <span class="letter">${letters[i]}</span>
+          <span>${esc(opt)}</span>
+        </button>`;
+    });
+
+    const allAnswered = answers.every(a => a !== null);
+    const isLast = current === TOTAL - 1;
+
+    root.innerHTML = `
+      <div class="qnav">${dotsHtml}</div>
+      <div class="q-eyebrow">${esc(item.section)}</div>
+      <p class="q-text">${esc(item.q)}</p>
+      <div class="options">${optsHtml}</div>
+      <div class="nav-row">
+        <button class="btn btn-ghost" id="prevBtn" ${current === 0 ? "disabled" : ""}>Back</button>
+        ${isLast
+          ? `<button class="btn btn-primary" id="submitBtn" ${allAnswered ? "" : "disabled"}>Submit for scoring</button>`
+          : `<button class="btn btn-primary" id="nextBtn" ${answers[current] === null ? "disabled" : ""}>Next question</button>`
+        }
+      </div>
+    `;
+
+    root.querySelectorAll(".option").forEach(btn => {
+      btn.addEventListener("click", () => {
+        answers[current] = parseInt(btn.dataset.idx, 10);
+        renderQuiz();
+      });
+    });
+    root.querySelectorAll(".qdot").forEach(btn => {
+      btn.addEventListener("click", () => {
+        current = parseInt(btn.dataset.idx, 10);
+        renderQuiz();
+      });
+    });
+    const prevBtn = document.getElementById("prevBtn");
+    if(prevBtn) prevBtn.addEventListener("click", () => { current = Math.max(0, current-1); renderQuiz(); });
+    const nextBtn = document.getElementById("nextBtn");
+    if(nextBtn) nextBtn.addEventListener("click", () => { current = Math.min(TOTAL-1, current+1); renderQuiz(); });
+    const submitBtn = document.getElementById("submitBtn");
+    if(submitBtn) submitBtn.addEventListener("click", () => { renderResults(); });
+  }
+
+  async function renderResults(){
+    phase = "results";
+    let correctCount = 0;
+    const sectionTally = {};
+    sessionQuestions.forEach((q, i) => {
+      if(!sectionTally[q.section]) sectionTally[q.section] = { correct:0, total:0 };
+      sectionTally[q.section].total += 1;
+      if(answers[i] === q.correct){
+        correctCount += 1;
+        sectionTally[q.section].correct += 1;
+      }
+    });
+    const pct = Math.round((correctCount / TOTAL) * 100);
+    const passed = correctCount >= PASS_COUNT;
+    try { window.MLC_REPORT && window.MLC_REPORT({ score: correctCount, total: TOTAL, pct: pct, passed: passed, breakdown: sectionTally,
+      missed: sessionQuestions.map(function(q, i){ return { q: q.q, picked: answers[i] == null ? "(blank)" : q.options[answers[i]], correct: q.options[q.correct], ok: answers[i] === q.correct }; }).filter(function(m){ return !m.ok; }) }); } catch(e){ console.warn(e); }
+
+
+    await saveStats(pct);
+    updateProgressBar();
+
+    let sectionsHtml = "";
+    Object.keys(sectionTally).forEach(sec => {
+      const t = sectionTally[sec];
+      const barPct = Math.round((t.correct / t.total) * 100);
+      sectionsHtml += `
+        <div class="sec-row">
+          <div class="sec-name">${esc(sec.replace(/^Part \d+ · /,""))}</div>
+          <div class="sec-bar-track"><div class="sec-bar-fill" style="width:${barPct}%"></div></div>
+          <div class="sec-frac mono">${t.correct}/${t.total}</div>
+        </div>`;
+    });
+
+    let reviewHtml = "";
+    const letters = ["A","B","C","D"];
+    sessionQuestions.forEach((q, i) => {
+      const userIdx = answers[i];
+      const isRight = userIdx === q.correct;
+      reviewHtml += `
+        <div class="review-item ${isRight ? "right" : "wrong"}">
+          <div class="review-top">
+            <span class="${isRight ? "tag-right" : "tag-wrong"}">${isRight ? "✓ Correct" : "✕ Missed"}</span>
+            <span class="mono" style="color:var(--ink-faint)">Q${i+1} · ${esc(q.section.replace(/^Part \d+ · /,""))}</span>
+          </div>
+          <p class="review-q">${esc(q.q)}</p>
+          ${isRight
+            ? `<div class="review-ans"><span class="lbl">Your answer:</span> ${letters[userIdx]}. ${esc(q.options[userIdx])}</div>`
+            : `<div class="review-ans"><span class="lbl">Your answer:</span> ${userIdx === null ? "— none —" : letters[userIdx] + ". " + esc(q.options[userIdx])}</div>
+               <div class="review-ans"><span class="lbl">Correct answer:</span> ${letters[q.correct]}. ${esc(q.options[q.correct])}</div>`
+          }
+          <div class="review-explain">${esc(q.explain)}</div>
+        </div>`;
+    });
+
+    root.innerHTML = `
+      <div class="result-head">
+        <div class="score-dial" style="--pct:${pct}">
+          <div class="pct">${pct}%</div>
+          <div class="frac">${correctCount}/${TOTAL}</div>
+        </div>
+        <div>
+          <div class="stamp ${passed ? "pass" : "fail"}">${passed ? "PASSED" : "NOT YET"}</div>
+          <div class="result-sub">${passed
+            ? "You've met the 80% bar for Collections 101. Nice work."
+            : `You needed ${PASS_COUNT}/${TOTAL} (80%) to pass. Review the missed questions below, then retake when ready.`}</div>
+        </div>
+      </div>
+
+      <div class="section-breakdown">
+        <h3>Score by section</h3>
+        ${sectionsHtml}
+      </div>
+
+      <div class="review-list">
+        ${reviewHtml}
+      </div>
+
+      <div class="result-actions">
+        <button class="btn btn-ghost" id="retakeBtn">Retake the check</button>
+      </div>
+    `;
+
+    document.getElementById("retakeBtn").addEventListener("click", () => {
+      renderIntro();
+    });
+  }
+
+  loadStats().then(renderIntro);
+})();
+</script>
+</body>
+</html>
